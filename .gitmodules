@@ -1,0 +1,3 @@
+[submodule "tbot_tokens"]
+	path = tbot_tokens
+	url = https://github.com/hamzehnasajpour/tbot_tokens.git
