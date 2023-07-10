@@ -1,8 +1,8 @@
 import openai
 
 class ChatGPT:
-    def __init__(self, api_key):
-        openai.api_key = api_key
+    def __init__(self):
+        pass
 
     def chat_with_gpt(self, prompt):
         response = openai.Completion.create(
@@ -20,22 +20,6 @@ class ChatGPT:
         
         return None
     
-    def chat(self, request):
+    def chat(self, api_key, request):
+        openai.api_key = api_key
         return self.chat_with_gpt(request)
-        
-
-# Example usage
-# print("Welcome to ChatGPT! Enter 'quit' to exit.")
-# api_key = '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'
-# chatbot = ChatGPT(api_key)
-
-# while True:
-#     user_input = input("User: ")
-
-#     # Check if user wants to quit
-#     if user_input.lower() == 'quit':
-#         break
-
-#     # Get the chatbot's response
-#     response = chatbot.chat_with_gpt(user_input)
-#     print("ChatGPT:", response)

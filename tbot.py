@@ -3,6 +3,7 @@ import configparser
 # from exchange_bot import ExchangeBot 
 from chat_bot import TelegramChatBot 
 from chat_gpt import ChatGPT
+from user_db import UserDB
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -10,15 +11,38 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def main() -> None:
+    token = configparser.ConfigParser()
+    token.read('/usr/local/etc/mytbot/tokens.conf')
+
     config = configparser.ConfigParser()
-    config.read('/usr/local/etc/mytbot/tokens.conf')        
+    config.read('/usr/local/etc/mytbot/bot.conf')       
 
-    chatgpt = ChatGPT(config['chatgpt']['token'])
+    global telegram_db
+    telegram_db = UserDB(config['db']['path'])
 
-    bot = TelegramChatBot(config['bot']['token'])
-    bot.set_message_handler(chatgpt.chat)
+    global chatgpt
+    chatgpt = ChatGPT()
+
+    bot = TelegramChatBot(token['bot']['token'], api_token_handler)
+    bot.set_message_handler(request_handler)
     bot.run()
 
+def api_token_handler(userid, username, api_key):
+    try:
+        telegram_db.insert(username, userid, api_key)
+        return "You are registerd now with your api_key"
+    except:
+        return "An error occured in api_key registration"
+
+def request_handler(userid, request):
+    try:
+        api_key = telegram_db.api_key(userid)
+        if api_key:
+            return chatgpt.chat(api_key, request)
+        else:
+            return "You have to first register yourself with openai API_KEY!!!"
+    except:
+        return "You have to first register yourself with openai API_KEY!!!"    
 
 if __name__ == "__main__":
     main()
