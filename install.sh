@@ -1,2 +1,2 @@
-sudo mkdir /usr/local/etc/telegram/bot/ -p
-sudo cp tbot_tokens/tokens.conf /usr/local/etc/telegram/bot/
+sudo mkdir /usr/local/etc/mytbot/ -p
+sudo cp tokens/tokens.conf /usr/local/etc/mytbot/
