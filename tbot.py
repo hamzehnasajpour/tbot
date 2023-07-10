@@ -38,13 +38,9 @@ def api_token_handler(userid, username, api_key):
 def request_handler(userid, request):
     try:
         api_key = telegram_db.api_key(str(userid))
-        print(userid)
-        print(request)
-        print(api_key)
         if api_key:
             return chatgpt.chat(api_key, request)
         else:
-            print("1")
             return "You have to first register yourself with openai API_KEY!!!"
     except Exception:
         traceback.print_exc()
