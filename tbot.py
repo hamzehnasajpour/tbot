@@ -4,6 +4,7 @@ import configparser
 from chat_bot import TelegramChatBot 
 from chat_gpt import ChatGPT
 from user_db import UserDB
+import traceback
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -19,9 +20,9 @@ def main() -> None:
 
     global telegram_db
     telegram_db = UserDB(config['db']['path'])
-
+    
     global chatgpt
-    chatgpt = ChatGPT()
+    chatgpt = ChatGPT(token['chatgpt']['token'])
 
     bot = TelegramChatBot(token['bot']['token'], api_token_handler)
     bot.set_message_handler(request_handler)
@@ -29,19 +30,24 @@ def main() -> None:
 
 def api_token_handler(userid, username, api_key):
     try:
-        telegram_db.insert(username, userid, api_key)
+        telegram_db.insert(userid, username, api_key)
         return "You are registerd now with your api_key"
     except:
         return "An error occured in api_key registration"
 
 def request_handler(userid, request):
     try:
-        api_key = telegram_db.api_key(userid)
+        api_key = telegram_db.api_key(str(userid))
+        print(userid)
+        print(request)
+        print(api_key)
         if api_key:
             return chatgpt.chat(api_key, request)
         else:
+            print("1")
             return "You have to first register yourself with openai API_KEY!!!"
-    except:
+    except Exception:
+        traceback.print_exc()
         return "You have to first register yourself with openai API_KEY!!!"    
 
 if __name__ == "__main__":
